@@ -1,18 +1,17 @@
 #!/usr/bin/python3
-
 import sys
 import random
 
+
 def gcd(a, b):
     """Calculates the greatest common divisor (GCD) of two numbers."""
-
     while b:
         a, b = b, a % b
     return a
 
+
 def pollard_rho(n):
     """Factorizes a composite number n using the Pollard-Rho method."""
-
     if n % 2 == 0:
         return 2, n // 2  # Handle even numbers efficiently
 
@@ -32,34 +31,30 @@ def pollard_rho(n):
         return d, n // d
 
 
-def main(filename):
-    """
-    reads numbers from a file line by line and 
-    attempts to factorize them using factorize()
-    """
-
+def factorize_numbers(filename):
+    """Reads numbers from a file, factorizes them, and prints results."""
     try:
         with open(filename, "r") as file:
             for line in file:
                 number = int(line.strip())
                 factors = pollard_rho(number)
                 if factors:
-                    print(f"{number}={factors[0]}*{factors[1]}")
+                    print(f"{number} = {factors[0]} * {factors[1]}")
                 else:
-                    root = int(number ** 0.5)
-                    if (root * root == number):
-                        print(f"{number}={root}*{root}")
+                    root = int(number**0.5)
+                    if root * root == number:
+                        print(f"{number} = {root} * {root}")
                     else:
                         print(f"{number} is prime")
     except FileNotFoundError:
-        print(f"Error: file {filename} not found")
+        print(f"Error: File '{filename}' not found.")
     except ValueError:
-        print(f"Error: invalid number in file {filename}")
+        print(f"Error: Invalid number in file '{filename}'.")
+
 
 if __name__ == "__main__":
-    if (len(sys.argv) != 2):
-        print("Usage: factors <file>")
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <file>")
         sys.exit(1)
-
     filename = sys.argv[1]
-    main(filename)
+    factorize_numbers(filename)
