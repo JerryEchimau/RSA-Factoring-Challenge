@@ -1,0 +1,57 @@
+#!/usr/bin/python3
+
+import sys
+import math
+
+def factorize(n):
+    """ Factorizes a natural no into a product of two smaller nos
+
+    returns: a tuple containing the two factors
+    """
+
+    if (n <= 1):
+        return (None)
+
+    # special cases for small factors
+    for i in (2, 3, 5):
+        while (n % i == 0):
+            return (i, n // i)
+
+    # Check divisibility by 6k ± 1 for efficiency
+    i = 5
+    while i * i <= n:
+        if (n % i == 0):
+            return (i, n // i)
+        if (n % (i + 2) == 0):
+            return (i + 2, n // (i + 2))
+        i += 6
+
+    return (None)
+
+def main(filename):
+    """
+    reads numbers from a file line by line and 
+    attempts to factorize them using factorize()
+    """
+
+    try:
+        with open(filename, "r") as file:
+            for line in file:
+                number = int(line.strip())
+                factors = factorize(number)
+                if factors:
+                    print(f"{number}={factors[0]}*{factors[1]}")
+                else:
+                    print(f"{number} is prime")
+    except FileNotFoundError:
+        print(f"Error: file {filename} not found")
+    except ValueError:
+        print(f"Error: invalid number in file {filename}")
+
+if __name__ == "__main__":
+    if (len(sys.argv) != 2):
+        print("Usage: factors <file>")
+        sys.exit(1)
+
+    filename = sys.argv[1]
+    main(filename)
