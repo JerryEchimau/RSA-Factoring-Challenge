@@ -1,32 +1,36 @@
 #!/usr/bin/python3
 
 import sys
-import math
+import random
 
-def factorize(n):
-    """ Factorizes a natural no into a product of two smaller nos
+def gcd(a, b):
+    """Calculates the greatest common divisor (GCD) of two numbers."""
 
-    returns: a tuple containing the two factors
-    """
+    while b:
+        a, b = b, a % b
+    return a
 
-    if (n <= 1):
-        return (None)
+def pollard_rho(n):
+    """Factorizes a composite number n using the Pollard-Rho method."""
 
-    # special cases for small factors
-    for i in (2, 3, 5):
-        while (n % i == 0):
-            return (i, n // i)
+    if n % 2 == 0:
+        return 2, n // 2  # Handle even numbers efficiently
 
-    # Check divisibility by 6k ± 1 for efficiency
-    i = 5
-    while i * i <= n:
-        if (n % i == 0):
-            return (i, n // i)
-        if (n % (i + 2) == 0):
-            return (i + 2, n // (i + 2))
-        i += 6
+    x = random.randint(2, n - 2)
+    y = x
+    d = 1
 
-    return (None)
+    while d == 1:
+        x = (x * x + 1) % n
+        y = (y * y + 1) % n
+        y = (y * y + 1) % n  # Two iterations for y
+        d = gcd(abs(x - y), n)
+
+    if d == n:
+        return None  # No factors found
+    else:
+        return d, n // d
+
 
 def main(filename):
     """
@@ -38,11 +42,15 @@ def main(filename):
         with open(filename, "r") as file:
             for line in file:
                 number = int(line.strip())
-                factors = factorize(number)
+                factors = pollard_rho(number)
                 if factors:
                     print(f"{number}={factors[0]}*{factors[1]}")
                 else:
-                    print(f"{number} is prime")
+                    root = int(number ** 0.5)
+                    if (root * root == number):
+                        print(f"{number}={root}*{root}")
+                    else:
+                        print(f"{number} is prime")
     except FileNotFoundError:
         print(f"Error: file {filename} not found")
     except ValueError:
