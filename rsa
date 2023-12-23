@@ -1,0 +1,94 @@
+#!/usr/bin/python3
+import sys
+import random
+import math
+
+def gcd(a, b):
+    """Calculates the greatest common divisor (GCD) of two numbers."""
+    while b:
+        a, b = b, a % b
+    return a
+
+def is_prime(n, k=5):
+    """Check if a number is prime using Miller-Rabin primality test."""
+    if n == 2 or n == 3:
+        return True
+    if n % 2 == 0:
+        return False
+
+    # Write n as 2^r * d + 1
+    r, d = 0, n - 1
+    while d % 2 == 0:
+        r += 1
+        d //= 2
+
+    # Witness loop
+    for _ in range(k):
+        a = random.randint(2, n - 2)
+        x = pow(a, d, n)
+        if x == 1 or x == n - 1:
+            continue
+        for _ in range(r - 1):
+            x = pow(x, 2, n)
+            if x == n - 1:
+                break
+        else:
+            return False
+    return True
+
+def pollard_rho(n):
+    """Factorizes a composite number n using the Pollard-Rho method."""
+    if n % 2 == 0:
+        return 2, n // 2  # Handle even numbers efficiently
+
+    x = random.randint(2, n - 2)
+    y = x
+    c = random.randint(1, n - 1)
+    d = 1
+
+    def f(x):
+        return (x**2 + c) % n
+
+    while d == 1:
+        x = f(x)
+        y = f(f(y))
+        d = gcd(abs(x - y), n)
+
+    if d == n:
+        return None  # No factors found
+    else:
+        return d, n // d
+
+def find_prime_factors(n):
+    """Finds prime factors of n using Pollard-Rho and additional primality check."""
+    factors = []
+    while not is_prime(n):
+        factor_tuple = pollard_rho(n)
+        while factor_tuple is None:
+            # Retry with a different random start if Pollard-Rho fails
+            factor_tuple = pollard_rho(n)
+        factor = factor_tuple[0]  # Extract one factor from the tuple
+        n //= factor
+        factors.append(factor)
+    factors.append(n)
+    return factors
+
+def factorize_rsa_number(filename):
+    """Reads an RSA number from a file, factors it, and prints the result."""
+    try:
+        with open(filename, "r") as file:
+            for line in file:
+                number = int(line.strip())
+                factors = find_prime_factors(number)
+                print(f"{number}={'*'.join(map(str, factors))}")
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' not found.")
+    except ValueError:
+        print(f"Error: Invalid nuber in file '{filename}'.")
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <file>")
+        sys.exit(1)
+    filename = sys.argv[1]
+    factorize_rsa_number(filename)
