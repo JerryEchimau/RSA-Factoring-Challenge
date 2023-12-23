@@ -39,11 +39,11 @@ def factorize_numbers(filename):
                 number = int(line.strip())
                 factors = pollard_rho(number)
                 if factors:
-                    print(f"{number} = {factors[0]} * {factors[1]}")
+                    print(f"{number}={factors[0]}*{factors[1]}")
                 else:
                     root = int(number**0.5)
                     if root * root == number:
-                        print(f"{number} = {root} * {root}")
+                        print(f"{number}={root}*{root}")
                     else:
                         print(f"{number} is prime")
     except FileNotFoundError:
