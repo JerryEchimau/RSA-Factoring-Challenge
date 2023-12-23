@@ -3,11 +3,13 @@ import sys
 import random
 import math
 
+
 def gcd(a, b):
     """Calculates the greatest common divisor (GCD) of two numbers."""
     while b:
         a, b = b, a % b
     return a
+
 
 def is_prime(n, k=5):
     """Check if a number is prime using Miller-Rabin primality test."""
@@ -36,6 +38,7 @@ def is_prime(n, k=5):
             return False
     return True
 
+
 def pollard_rho(n):
     """Factorizes a composite number n using the Pollard-Rho method."""
     if n % 2 == 0:
@@ -59,8 +62,12 @@ def pollard_rho(n):
     else:
         return d, n // d
 
+
 def find_prime_factors(n):
-    """Finds prime factors of n using Pollard-Rho and additional primality check."""
+    """
+    Finds prime factors of n using Pollard-Rho
+    and additional primality check.
+    """
     factors = []
     while not is_prime(n):
         factor_tuple = pollard_rho(n)
@@ -72,6 +79,7 @@ def find_prime_factors(n):
         factors.append(factor)
     factors.append(n)
     return factors
+
 
 def factorize_rsa_number(filename):
     """Reads an RSA number from a file, factors it, and prints the result."""
@@ -85,6 +93,7 @@ def factorize_rsa_number(filename):
         print(f"Error: File '{filename}' not found.")
     except ValueError:
         print(f"Error: Invalid nuber in file '{filename}'.")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
